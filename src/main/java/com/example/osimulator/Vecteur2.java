@@ -19,11 +19,6 @@ public class Vecteur2 {
         this.setY(y);
     }
 
-    public Vecteur2(Vecteur2 vector2) {
-        this.setX(vector2.getX());
-        this.setY(vector2.getY());
-    }
-
     public final void setX(double var1) {
         this.XProperty().set(var1);
     }

@@ -1,48 +1,67 @@
 package com.example.osimulator;
 
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Planete extends Circle {
+import static com.example.osimulator.Main.ECHELLE;
 
-    private double trueAnomaly = 0;
-    private final double ecc;
-    private final double sma;
+public class Planete extends Sphere {
 
-    private Vecteur2 position;
-    private Vecteur2 speed;
+    private Vecteur2 position, speed;
+    public String name;
+    private Orbit orbit;
+    private double periapsis, apoapsis;
+    private PolyLine3D orbitPath;
 
-    public Planete(int xPos, int yPos, int radius, Color color, double ecc, double sma) {
-        super(xPos, yPos, radius, color);
-        position = new Vecteur2(xPos, yPos);
-        super.centerXProperty().bind(position.XProperty());
-        super.centerYProperty().bind(position.YProperty());
+    private boolean drawPath = true;
+
+    public Planete (double radius, Color color, double periapsis, double apoapsis, String name) {
+        super(radius);
+        PhongMaterial mat = new PhongMaterial();
+        mat.setDiffuseColor(color);
+        super.setMaterial(mat);
+        position = new Vecteur2(0, 0);
+        super.setTranslateX(position.getX());
+        super.setTranslateY(position.getY());
+        super.translateXProperty().bind(position.XProperty());
+        super.translateYProperty().bind(position.YProperty());
         speed = new Vecteur2();
 
-        this.ecc = ecc;
-        this.sma = sma;
+        this.name = name;
+        this.apoapsis = apoapsis;
+        this.periapsis = periapsis;
+        orbit = new Orbit(5000);
     }
 
-    private double distance() {
-        return (sma * (1 - ecc * ecc)) / (1 + (ecc * Math.cos(trueAnomaly)));
+    public void updateOrbitPath(Vecteur2 sunPosition) {
+        if (orbitPath != null) {
+            Main.racine.getChildren().remove(orbitPath);
+        }
+        Path orbitRealPath = orbit.getPathOrbit(sunPosition, periapsis/ ECHELLE, apoapsis/ ECHELLE);
+
+
+        List<Point3D> lisPoint3D = new ArrayList<>();
+        for (int i = 1; i < orbitRealPath.getElements().size(); i++) {
+            LineTo lineTo = (LineTo) orbitRealPath.getElements().get(i);
+            lisPoint3D.add(new Point3D(lineTo.getX(), lineTo.getY(), 0));
+        }
+
+        orbitPath = new PolyLine3D(lisPoint3D, 15, Color.ORANGE);
+
+        Main.racine.getChildren().addAll(orbitPath);
+        drawPath = false;
     }
 
-    public void updatePosition(Vecteur2 sunPosition) {
-        if (trueAnomaly < (Math.PI*2))
-            trueAnomaly += 0.05;
-        else
-            trueAnomaly = 0;
+    public void updatePosition(Vecteur2 sunPosition, double t) {
+        Vecteur2 newPosition = orbit.findOrbitPoint(sunPosition, periapsis/ ECHELLE, apoapsis/ ECHELLE, t);
+        position.setX(newPosition.getX());
+        position.setY(newPosition.getY());
 
-        double scaledDistance = distance() / Constantes.SCALE_CONST_DISTANCE;
-
-        double eccentricAnomaly = 2 * Math.atan(Math.tan(trueAnomaly / 2) /
-                (Math.sqrt((1 + ecc) / (1 - ecc))));
-
-        position.setX(sunPosition.getX() + (scaledDistance * Math.cos(eccentricAnomaly)));
-        position.setY(sunPosition.getY() - (scaledDistance * Math.sin(eccentricAnomaly)));
+        if (drawPath) {
+            updateOrbitPath(sunPosition);
+        }
     }
-
-    /*public double getGM() {
-        return GM;
-    }*/
 }
