@@ -131,44 +131,11 @@ public class Main extends Application {
 
         stage.addEventHandler(ScrollEvent.SCROLL, ev -> {
             double delta = ev.getDeltaY();
+            camera.translateXProperty().set(ev.getSceneX());
+            camera.translateYProperty().set(ev.getDeltaY());
             camera.translateZProperty().set(camera.getTranslateZ() + delta);
         });
-
-        /*EventHandler<ScrollEvent> onScrollEventHandler = new EventHandler<ScrollEvent>() {
-
-            @Override
-            public void handle(ScrollEvent event) {
-
-                double delta = 1.2;
-
-                double scale = canvas.getScale(); // currently we only use Y, same value is used for X
-                double oldScale = scale;
-
-                if (event.getDeltaY() < 0)
-                    scale /= delta;
-                else
-                    scale *= delta;
-
-                scale = clamp( scale, MIN_SCALE, MAX_SCALE);
-
-                double f = (scale / oldScale)-1;
-
-                double dx = (event.getSceneX() - (canvas.getBoundsInParent().getWidth()/2 + canvas.getBoundsInParent().getMinX()));
-                double dy = (event.getSceneY() - (canvas.getBoundsInParent().getHeight()/2 + canvas.getBoundsInParent().getMinY()));
-
-                canvas.setScale( scale);
-
-                // note: pivot value must be untransformed, i. e. without scaling
-                canvas.setPivot(f*dx, f*dy);
-
-                event.consume();
-
-            }
-
-        };*/
     }
-
-
 
     public static void main(String[] args) {
         launch();

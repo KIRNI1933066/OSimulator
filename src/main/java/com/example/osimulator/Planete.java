@@ -43,13 +43,13 @@ public class Planete extends Sphere {
         Path orbitRealPath = orbit.getPathOrbit(sunPosition, periapsis/ ECHELLE, apoapsis/ ECHELLE);
 
 
-        List<Point3D> lisPoint3D = new ArrayList<>();
+        List<Point3D> listPoints3D = new ArrayList<>();
         for (int i = 1; i < orbitRealPath.getElements().size(); i++) {
             LineTo lineTo = (LineTo) orbitRealPath.getElements().get(i);
-            lisPoint3D.add(new Point3D(lineTo.getX(), lineTo.getY(), 0));
+            listPoints3D.add(new Point3D(lineTo.getX(), lineTo.getY(), 0));
         }
 
-        orbitPath = new PolyLine3D(lisPoint3D, 15, Color.ORANGE);
+        orbitPath = new PolyLine3D(listPoints3D, 15, Color.ORANGE, PolyLine3D.LineType.TRIANGLE);
 
         Main.racine.getChildren().addAll(orbitPath);
         drawPath = false;
