@@ -1,29 +1,20 @@
 package com.example.osimulator;
 
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PrimitiveIterator;
 
 import static com.example.osimulator.Main.ECHELLE;
-import static com.example.osimulator.Main.principal;
 
 public class Planete extends Sphere {
 
-    private final Vecteur2 mousepos = new Vecteur2();
     private Vecteur2 position, speed;
     public String name;
     private Orbit orbit;
     private double periapsis, apoapsis;
     private PolyLine3D orbitPath;
-    private double radius;
-    private Color couleur;
-    private InfoPlanete infoPlanete;
 
     private boolean drawPath = true;
 
@@ -42,21 +33,7 @@ public class Planete extends Sphere {
         this.name = name;
         this.apoapsis = apoapsis;
         this.periapsis = periapsis;
-        this.radius = radius;
-        this.couleur = color;
         orbit = new Orbit(5000);
-
-        infoPlanete = new InfoPlanete(this);
-        BorderPane bp = (BorderPane)infoPlanete.getChildren().get(0);
-        super.setOnMouseEntered(mouseEvent -> {
-            infoPlanete.setTranslateX(mouseEvent.getSceneX() + 5);
-            infoPlanete.setTranslateY(mouseEvent.getSceneY() - bp.getPrefHeight());
-            if (!principal.getChildren().contains(infoPlanete))
-                principal.getChildren().add(infoPlanete);
-        });
-        super.setOnMouseExited(mouseEvent -> {
-            principal.getChildren().remove(infoPlanete);
-        });
     }
 
     public void updateOrbitPath(Vecteur2 sunPosition) {
@@ -72,17 +49,7 @@ public class Planete extends Sphere {
             listPoints3D.add(new Point3D(lineTo.getX(), lineTo.getY(), 0));
         }
 
-        BorderPane bp = (BorderPane)infoPlanete.getChildren().get(0);
         orbitPath = new PolyLine3D(listPoints3D, 15, Color.ORANGE, PolyLine3D.LineType.TRIANGLE);
-        orbitPath.setOnMouseEntered(mouseEvent -> {
-            infoPlanete.setTranslateX(mouseEvent.getSceneX() + 5);
-            infoPlanete.setTranslateY(mouseEvent.getSceneY() - bp.getPrefHeight());
-            if (!principal.getChildren().contains(infoPlanete))
-                principal.getChildren().add(infoPlanete);
-        });
-        orbitPath.setOnMouseExited(mouseEvent -> {
-            principal.getChildren().remove(infoPlanete);
-        });
 
         Main.racine.getChildren().addAll(orbitPath);
         drawPath = false;
@@ -96,13 +63,5 @@ public class Planete extends Sphere {
         if (drawPath) {
             updateOrbitPath(sunPosition);
         }
-    }
-
-    public double getRadiusPlanete() {
-        return radius;
-    }
-
-    public Color getCouleur() {
-        return couleur;
     }
 }

@@ -5,17 +5,12 @@ import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
@@ -41,7 +36,7 @@ public class Main extends Application {
     private static final double[] FACTEURS_VITESSE = {1.6075,1.176,1,0.8085,0.4389,0.3254,0.2287,0.1823};
     private static final double V_BASE_TERRE = 0.0001;
     public static Group racine = new Group();
-    public static Group principal = new Group();
+
     @Override
     public void start(Stage stage) throws FileNotFoundException {
 
@@ -54,6 +49,10 @@ public class Main extends Application {
         racine.getChildren().add(soleil);
 
         Slider sliderVitesseTemps = new Slider(0.05,500,5);
+        sliderVitesseTemps.setTranslateX(-1000);
+        sliderVitesseTemps.setTranslateY(-1000);
+        sliderVitesseTemps.setScaleX(3);
+        Group secondaire = new Group(sliderVitesseTemps, racine);
 
 
         Planete[] planetes = new Planete[8];
@@ -99,25 +98,12 @@ public class Main extends Application {
         racine.getChildren().add(pointLight);
         racine.getChildren().add(new AmbientLight());
 
-        InfoPlanete infoPlanet = new InfoPlanete(planetes[0]);
-
-        SubScene scene3D = new SubScene(racine, LARGEUR_SCENE,HAUTEUR_SCENE,true, SceneAntialiasing.BALANCED);
-        scene3D.setFill(Color.BLACK);
-        scene3D.setCamera(camera);
-
-        principal.getChildren().addAll(scene3D, sliderVitesseTemps);
-
-        Scene scene2D = new Scene(principal, LARGEUR_SCENE, HAUTEUR_SCENE);
-        initMouseControl(racine, scene2D, stage, camera);
-
-        stage.setScene(scene2D);
+        Scene scene = new Scene(secondaire, LARGEUR_SCENE,HAUTEUR_SCENE,true);
+        initMouseControl(racine, scene, stage, camera);
+        scene.setFill(Color.BLACK);
+        scene.setCamera(camera);
+        stage.setScene(scene);
         stage.setFullScreen(true);
-        stage.widthProperty().addListener((observable -> {
-            scene3D.setWidth(stage.getWidth());
-        }));
-        stage.heightProperty().addListener((observable -> {
-            scene3D.setHeight(stage.getHeight());
-        }));
         stage.show();
     }
 
