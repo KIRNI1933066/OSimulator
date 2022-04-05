@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PrimitiveIterator;
 
-import static com.example.osimulator.Main.ECHELLE;
-import static com.example.osimulator.Main.principal;
+import static com.example.osimulator.Main.*;
 
 public class Planete extends Sphere {
 
@@ -48,6 +47,23 @@ public class Planete extends Sphere {
 
         infoPlanete = new InfoPlanete(this);
         BorderPane bp = (BorderPane)infoPlanete.getChildren().get(0);
+        super.setOnMousePressed(mouseEvent -> {
+            if (mouseEvent.isPrimaryButtonDown())
+            {
+                if (Main.pivot.xProperty().isBound())
+                {
+                    Main.pivot.xProperty().unbind();
+                }
+                if (Main.pivot.yProperty().isBound())
+                {
+                    Main.pivot.yProperty().unbind();
+                }
+                Main.pivot.xProperty().bind(this.translateXProperty());
+                Main.pivot.yProperty().bind(this.translateYProperty());
+                zoom.setX(0);
+                zoom.setY(0);
+            }
+        });
         super.setOnMouseEntered(mouseEvent -> {
             infoPlanete.setTranslateX(mouseEvent.getSceneX() + 5);
             infoPlanete.setTranslateY(mouseEvent.getSceneY() - bp.getPrefHeight());
@@ -74,6 +90,24 @@ public class Planete extends Sphere {
 
         BorderPane bp = (BorderPane)infoPlanete.getChildren().get(0);
         orbitPath = new PolyLine3D(listPoints3D, 15, Color.ORANGE, PolyLine3D.LineType.TRIANGLE);
+
+        orbitPath.setOnMousePressed(mouseEvent -> {
+            if (mouseEvent.isPrimaryButtonDown())
+            {
+                if (Main.pivot.xProperty().isBound())
+                {
+                    Main.pivot.xProperty().unbind();
+                }
+                if (Main.pivot.yProperty().isBound())
+                {
+                    Main.pivot.yProperty().unbind();
+                }
+                Main.pivot.xProperty().bind(this.translateXProperty());
+                Main.pivot.yProperty().bind(this.translateYProperty());
+                zoom.setX(0);
+                zoom.setY(0);
+            }
+        });
         orbitPath.setOnMouseEntered(mouseEvent -> {
             infoPlanete.setTranslateX(mouseEvent.getSceneX() + 5);
             infoPlanete.setTranslateY(mouseEvent.getSceneY() - bp.getPrefHeight());
