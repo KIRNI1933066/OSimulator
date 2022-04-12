@@ -39,7 +39,7 @@ public class Main extends Application {
     public static Translate zoom;
 
     public static final double ECHELLE = 400000;
-    private static final Vecteur2 POS_SOLEIL = new Vecteur2(0, 0);
+    public static final Vecteur2 POS_SOLEIL = new Vecteur2(0, 0);
     private static final int LARGEUR_SCENE = 1000;
     private static final int HAUTEUR_SCENE = 1000;
     private static double temps = 0;
@@ -55,16 +55,16 @@ public class Main extends Application {
         Image vide = new Image(new FileInputStream("Blank.jpg"));
         Image etoiles = new Image(new FileInputStream("stars.jpg"));
         Sphere soleil = new Sphere(10);
-        Box ciel = new Box(50000, 50000, 50000);
-        ciel.setCullFace(CullFace.NONE);
+        //Box ciel = new Box(50000, 50000, 50000);
+        //ciel.setCullFace(CullFace.NONE);
         PhongMaterial matCiel = new PhongMaterial();
         matCiel.setDiffuseMap(etoiles);
-        ciel.setMaterial(matCiel);
+        //ciel.setMaterial(matCiel);
         PhongMaterial matSoleil = new PhongMaterial();
         matSoleil.setDiffuseColor(Color.ORANGE);
         matSoleil.setSelfIlluminationMap(vide);
         soleil.setMaterial(matSoleil);
-        racine.getChildren().addAll(ciel, soleil);
+        racine.getChildren().addAll(soleil);
 
         Slider sliderVitesseTemps = new Slider(0.05,500,5);
 
@@ -72,7 +72,7 @@ public class Main extends Application {
         Planete[] planetes = new Planete[8];
         Constantes.InfoPlanetes[] infoPlanetes = Constantes.InfoPlanetes.values();
         for (int i = 0; i < planetes.length; i++) {
-            planetes[i] = new Planete(infoPlanetes[i].radius, infoPlanetes[i].color, infoPlanetes[i].periapsis, infoPlanetes[i].apoapsis, infoPlanetes[i].name);
+            planetes[i] = new Planete(infoPlanetes[i].radius, infoPlanetes[i].color, infoPlanetes[i].periapsis, infoPlanetes[i].apoapsis, infoPlanetes[i].name, infoPlanetes[i].masse);
             racine.getChildren().add(planetes[i]);
         }
         new AnimationTimer() {
@@ -110,8 +110,6 @@ public class Main extends Application {
         racine.getChildren().add(pointLight);
         racine.getChildren().add(new AmbientLight());
 
-        InfoPlanete infoPlanet = new InfoPlanete(planetes[0]);
-
         SubScene scene3D = new SubScene(racine, LARGEUR_SCENE,HAUTEUR_SCENE,true, SceneAntialiasing.BALANCED);
         scene3D.setFill(Color.BLACK);
         scene3D.setCamera(camera);
@@ -119,6 +117,7 @@ public class Main extends Application {
         principal.getChildren().addAll(scene3D, sliderVitesseTemps);
 
         Scene scene2D = new Scene(principal, LARGEUR_SCENE, HAUTEUR_SCENE);
+        scene2D.getStylesheets().add("file:src/main/java/com/example/osimulator/css/infoplanete.css");
         mouseControl(stage, scene2D, camera);
         //initMouseControl(racine, scene2D, stage, camera);
 
@@ -138,7 +137,7 @@ public class Main extends Application {
         pivot = new Translate(0, 0, 0);
         zoom = new Translate(0, 0, -3000);
         Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
-        Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
+        Rotate rotateY = new Rotate(0, Rotate.Z_AXIS);
 
         camera.getTransforms().addAll(
                 pivot,

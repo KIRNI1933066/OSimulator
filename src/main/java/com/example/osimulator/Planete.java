@@ -1,5 +1,6 @@
 package com.example.osimulator;
 
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
@@ -23,10 +24,11 @@ public class Planete extends Sphere {
     private double radius;
     private Color couleur;
     private InfoPlanete infoPlanete;
+    public double masse;
 
     private boolean drawPath = true;
 
-    public Planete (double radius, Color color, double periapsis, double apoapsis, String name) {
+    public Planete (double radius, Color color, double periapsis, double apoapsis, String name, double masse) {
         super(radius);
         PhongMaterial mat = new PhongMaterial();
         mat.setDiffuseColor(color);
@@ -43,10 +45,19 @@ public class Planete extends Sphere {
         this.periapsis = periapsis;
         this.radius = radius;
         this.couleur = color;
+        this.masse = masse;
         orbit = new Orbit(5000);
 
         infoPlanete = new InfoPlanete(this);
         BorderPane bp = (BorderPane)infoPlanete.getChildren().get(0);
+        infoPlanete.setVisible(false);
+        principal.getChildren().add(infoPlanete);
+        Platform.runLater(() -> {
+            principal.getChildren().remove(infoPlanete);
+        });
+        position.XProperty().addListener((observable, oldVal, newVal) -> {
+            infoPlanete.setDistanceSoleil(Vecteur2.distanceTo(position, POS_SOLEIL));
+        });
         super.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown())
             {
@@ -65,10 +76,16 @@ public class Planete extends Sphere {
             }
         });
         super.setOnMouseEntered(mouseEvent -> {
-            infoPlanete.setTranslateX(mouseEvent.getSceneX() + 5);
-            infoPlanete.setTranslateY(mouseEvent.getSceneY() - bp.getPrefHeight());
             if (!principal.getChildren().contains(infoPlanete))
+            {
+                infoPlanete.setVisible(false);
                 principal.getChildren().add(infoPlanete);
+            }
+            Platform.runLater(() -> {
+                infoPlanete.setTranslateX(principal.getScene().getWidth() - bp.getWidth() - 20);
+                infoPlanete.setTranslateY(principal.getScene().getHeight()/2 - bp.getHeight()/2);
+                infoPlanete.setVisible(true);
+            });
         });
         super.setOnMouseExited(mouseEvent -> {
             principal.getChildren().remove(infoPlanete);
@@ -109,13 +126,21 @@ public class Planete extends Sphere {
             }
         });
         orbitPath.setOnMouseEntered(mouseEvent -> {
-            infoPlanete.setTranslateX(mouseEvent.getSceneX() + 5);
-            infoPlanete.setTranslateY(mouseEvent.getSceneY() - bp.getPrefHeight());
+            super.setMouseTransparent(true);
             if (!principal.getChildren().contains(infoPlanete))
+            {
+                infoPlanete.setVisible(false);
                 principal.getChildren().add(infoPlanete);
+            }
+            Platform.runLater(() -> {
+                infoPlanete.setTranslateX(principal.getScene().getWidth() - bp.getWidth() - 20);
+                infoPlanete.setTranslateY(principal.getScene().getHeight()/2 - bp.getHeight()/2);
+                infoPlanete.setVisible(true);
+            });
         });
         orbitPath.setOnMouseExited(mouseEvent -> {
             principal.getChildren().remove(infoPlanete);
+            super.setMouseTransparent(false);
         });
 
         Main.racine.getChildren().addAll(orbitPath);
